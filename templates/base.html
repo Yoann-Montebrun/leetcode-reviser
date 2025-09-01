@@ -4,33 +4,20 @@
   <meta charset="utf-8">
   <title>LeetCode Reviser</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- Pico.css for a minimal, clean aesthetic -->
   <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@2/css/pico.min.css">
   <style>
-    :root {
-      --brand: hsl(220 90% 56%);
-    }
-    header .brand {
-      display: flex; align-items: baseline; gap: .5rem;
-    }
-    .brand .dot {
-      height: .8rem; width: .8rem; border-radius: 999px; background: var(--brand);
-      display:inline-block;
-    }
-    .card {
-      border: 1px solid hsl(0 0% 90%);
-      border-radius: 12px;
-      padding: 1rem 1.25rem;
-      box-shadow: 0 1px 6px rgba(0,0,0,.06);
-    }
-    .pill {
-      padding: .2rem .5rem; border-radius: 999px; background: hsl(220 80% 96%); color: hsl(220 70% 35%);
-      font-size: .75rem;
-    }
+    :root { --brand: hsl(220 90% 56%); }
+    header .brand { display: flex; align-items: baseline; gap: .5rem; }
+    .brand .dot { height: .8rem; width: .8rem; border-radius: 999px; background: var(--brand); display:inline-block; }
+    .card { border: 1px solid hsl(0 0% 90%); border-radius: 12px; padding: 1rem 1.25rem; box-shadow: 0 1px 6px rgba(0,0,0,.06); }
+    .pill { padding: .2rem .5rem; border-radius: 999px; background: hsl(220 80% 96%); color: hsl(220 70% 35%); font-size: .75rem; }
     .muted { color: hsl(0 0% 40%); font-size: .9rem; }
     nav a[aria-current="page"] { color: var(--brand); font-weight: 700; }
     form.inline { display:flex; gap:.5rem; align-items:center; flex-wrap: wrap; }
     footer { margin-top: 3rem; font-size:.85rem; color: hsl(0 0% 45%); }
+    table { width: 100%; }
+    th, td { white-space: nowrap; }
+    td:nth-child(1) { white-space: normal; }
   </style>
 </head>
 <body>
@@ -45,7 +32,7 @@
       <ul>
         <li><a href="{{ url_for('home') }}" {% if request.path=='/' %}aria-current="page"{% endif %}>Today</a></li>
         <li><a href="{{ url_for('add') }}" {% if request.path.startswith('/add') %}aria-current="page"{% endif %}>Add</a></li>
-        <!-- Future: Stats -->
+        <li><a href="{{ url_for('history') }}" {% if request.path.startswith('/history') %}aria-current="page"{% endif %}>History</a></li>
       </ul>
     </nav>
   </header>
@@ -66,7 +53,7 @@
   </main>
 
   <footer class="container">
-    <p class="muted">SM‑2 scheduling • local SQLite • built with Flask</p>
+    <p class="muted">SM-2 scheduling • local SQLite • built with Flask</p>
   </footer>
 </body>
 </html>

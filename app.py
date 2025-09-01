@@ -1,6 +1,7 @@
 from datetime import date
 from flask import Flask, render_template, request, redirect, url_for, flash
 from db import init_db, add_problem, list_due_problems, get_problem, update_problem_after_attempt, add_attempt
+from db import get_today_attempts, get_today_summary, get_global_summary, list_all_problems_with_stats
 from scheduler import ReviewState, schedule_after_attempt
 
 app = Flask(__name__)
@@ -39,7 +40,6 @@ def add():
 
 @app.route("/grade/<int:problem_id>", methods=["POST"])
 def grade(problem_id: int):
-    # Get current state
     row = get_problem(problem_id)
     if not row:
         flash("Problem not found.", "error")
@@ -50,13 +50,11 @@ def grade(problem_id: int):
     except ValueError:
         q = 0
 
-    # Optional metrics
     ts = request.form.get("time_spent_min", "").strip()
     hints = request.form.get("hints_used", "").strip()
     time_spent_min = int(ts) if ts.isdigit() else None
     hints_used = int(hints) if hints.isdigit() else None
 
-    # Build state and schedule
     state = ReviewState(
         ef=float(row["ef"]),
         reps=int(row["reps"]),
@@ -65,7 +63,6 @@ def grade(problem_id: int):
     )
     new_state = schedule_after_attempt(state, q, today=date.today())
 
-    # Persist
     update_problem_after_attempt(
         problem_id,
         ef=new_state.ef,
@@ -79,6 +76,20 @@ def grade(problem_id: int):
     add_attempt(problem_id, q, time_spent_min, hints_used)
     flash(f"Saved. Next review on {new_state.next_review.isoformat()}", "success")
     return redirect(url_for("home"))
+
+@app.route("/history")
+def history():
+    today = date.today()
+    today_summary = get_today_summary(today)
+    global_summary = get_global_summary(today)
+    attempts = get_today_attempts(today)
+    problems = list_all_problems_with_stats()
+    return render_template("history.html",
+                           today=today,
+                           today_summary=today_summary,
+                           global_summary=global_summary,
+                           attempts=attempts,
+                           problems=problems)
 
 if __name__ == "__main__":
     app.run(debug=True)

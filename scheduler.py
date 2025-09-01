@@ -1,14 +1,11 @@
-from __future__ import annotations
 from dataclasses import dataclass
 from datetime import date, timedelta
+from typing import Optional
 
 MIN_EF = 1.3
 
 def update_ease_factor(ef: float, q: int) -> float:
-    """
-    SM-2 EF update.
-    q in [0..5]
-    """
+    """SM-2 EF update. q in [0..5]"""
     if q < 0: q = 0
     if q > 5: q = 5
     new_ef = ef + (0.1 - (5 - q) * (0.08 + (5 - q) * 0.02))
@@ -21,10 +18,8 @@ class ReviewState:
     interval_days: int  # previous interval
     next_review: date
 
-def schedule_after_attempt(state: ReviewState, q: int, today: date | None = None) -> ReviewState:
-    """
-    Apply SM-2 style update based on quality q and return new state.
-    """
+def schedule_after_attempt(state: ReviewState, q: int, today: Optional[date] = None) -> ReviewState:
+    """Apply SM-2 style update based on quality q and return new state."""
     if today is None:
         today = date.today()
 

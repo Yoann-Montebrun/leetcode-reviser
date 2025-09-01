@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block content %}
+  <h2>History & Dashboard</h2>
+
+  <div class="grid">
+    <article class="card">
+      <header><strong>Problems total</strong></header>
+      <h3 style="margin:.3rem 0 0">{{ global_summary.problems_total }}</h3>
+      <p class="muted">In database</p>
+    </article>
+    <article class="card">
+      <header><strong>Due today</strong></header>
+      <h3 style="margin:.3rem 0 0">{{ global_summary.due_today }}</h3>
+      <p class="muted">On {{ today.isoformat() }}</p>
+    </article>
+    <article class="card">
+      <header><strong>Attempts today</strong></header>
+      <h3 style="margin:.3rem 0 0">{{ today_summary.attempts_today }}</h3>
+      <p class="muted">Avg q: {{ today_summary.avg_q_today if today_summary.avg_q_today is not none else "-" }}</p>
+    </article>
+    <article class="card">
+      <header><strong>Time today</strong></header>
+      <h3 style="margin:.3rem 0 0">{{ today_summary.time_today }} min</h3>
+      <p class="muted">Hints used: {{ today_summary.hints_today }}</p>
+    </article>
+  </div>
+
+  <section>
+    <h3 style="margin-top:1.5rem;">Today's activity • {{ today.isoformat() }}</h3>
+    {% if attempts|length == 0 %}
+      <article class="card"><p>No attempts yet today.</p></article>
+    {% else %}
+      <div class="grid">
+      {% for a in attempts %}
+        <article class="card">
+          <header>
+            <a href="{{ a['url'] }}" target="_blank" rel="noopener"><strong>{{ a['title'] }}</strong></a>
+          </header>
+          <p class="muted">at {{ a['attempted_at'] }}</p>
+          <p>q = <strong>{{ a['q'] }}</strong>
+             • time = {{ a['time_spent_min'] if a['time_spent_min'] is not none else "-" }} min
+             • hints = {{ a['hints_used'] if a['hints_used'] is not none else "-" }}</p>
+        </article>
+      {% endfor %}
+      </div>
+    {% endif %}
+  </section>
+
+  <section>
+    <h3 style="margin-top:1.5rem;">All problems</h3>
+    {% if problems|length == 0 %}
+      <article class="card"><p>No problems yet. <a href="{{ url_for('add') }}">Add your first one</a>.</p></article>
+    {% else %}
+      <div class="card">
+        <table>
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Next review</th>
+              <th>Last q</th>
+              <th>Avg q</th>
+              <th>Attempts</th>
+              <th>EF</th>
+              <th>Reps</th>
+              <th>Last attempt</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for p in problems %}
+            <tr>
+              <td>
+                <a href="{{ p['url'] }}" target="_blank" rel="noopener">{{ p['title'] }}</a>
+                {% if p['tags'] %}<div class="muted" style="font-size:.8rem;">{{ p['tags'] }}</div>{% endif %}
+              </td>
+              <td>{{ p['next_review'] }}</td>
+              <td>{{ p['last_q'] if p['last_q'] is not none else "-" }}</td>
+              <td>{{ '%.2f'|format(p['avg_q']) }}</td>
+              <td>{{ p['attempts'] }}</td>
+              <td>{{ '%.2f'|format(p['ef']) }}</td>
+              <td>{{ p['reps'] }}</td>
+              <td>{{ p['last_attempt'] if p['last_attempt'] else (p['last_attempt_at'] if p['last_attempt_at'] else "-") }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% endif %}
+  </section>
+{% endblock %}
