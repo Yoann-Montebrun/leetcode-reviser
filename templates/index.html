@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+  <h2>Today • {{ today.isoformat() }}</h2>
+  {% if problems|length == 0 %}
+    <article class="card">
+      <p>No problems due today. 🎉 Add some or come back tomorrow!</p>
+      <p><a href="{{ url_for('add') }}">Add a problem</a></p>
+    </article>
+  {% else %}
+    <p class="muted">{{ problems|length }} problem(s) due.</p>
+    <div class="grid">
+      {% for p in problems %}
+      <article class="card">
+        <header>
+          <h3 style="margin-bottom:.5rem;">
+            <a href="{{ p['url'] }}" target="_blank" rel="noopener">{{ p['title'] }}</a>
+          </h3>
+          {% if p['tags'] %}
+            <span class="pill">{{ p['tags'] }}</span>
+          {% endif %}
+        </header>
+        <p class="muted">
+          Next review: {{ p['next_review'] }} • EF={{ '%.2f'|format(p['ef']) }} • reps={{ p['reps'] }} • last q={{ p['last_q']|none_to_dash }}
+        </p>
+        <form class="inline" action="{{ url_for('grade', problem_id=p['id']) }}" method="post">
+          <label for="q-{{p['id']}}">Grade (0–5)</label>
+          <select id="q-{{p['id']}}" name="q" required>
+            {% for i in range(0,6) %}
+              <option value="{{ i }}" {% if i==3 %}selected{% endif %}>{{ i }}</option>
+            {% endfor %}
+          </select>
+
+          <input type="number" name="time_spent_min" placeholder="mins" min="0" style="max-width:7rem;">
+          <input type="number" name="hints_used" placeholder="hints" min="0" style="max-width:7rem;">
+          <button type="submit">Submit</button>
+        </form>
+      </article>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endblock %}

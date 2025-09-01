@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+  <h2>Add a problem</h2>
+  <form method="post">
+    <label for="title">Title</label>
+    <input id="title" name="title" type="text" placeholder="Two Sum" required>
+
+    <label for="url">URL</label>
+    <input id="url" name="url" type="url" placeholder="https://leetcode.com/problems/two-sum/" required>
+
+    <label for="tags">Tags (optional, comma-separated)</label>
+    <input id="tags" name="tags" type="text" placeholder="array, hash-map">
+
+    <button type="submit">Add</button>
+  </form>
+{% endblock %}
